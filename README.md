@@ -4,5 +4,5 @@ For this code, you need to manually set the parameter of readSTFT to 'true' to a
 
 
 
-Also, you can get partial function and test code.
+Also, you can get functions and test code seperately!
 
