@@ -1,7 +1,30 @@
 # **Speaker Identification System**
 
-## **Overview**
-This project implements a speaker identification system using **Mel-Frequency Cepstral Coefficients (MFCC)** and **Vector Quantization (VQ)** with the **Linde-Buzo-Gray (LBG)** algorithm. The system is trained to recognize different speakers based on their voice recordings.
+## **Project Background**
+### **Introduction**
+Speaker recognition is the process of **automatically identifying who is speaking** based on unique characteristics embedded in speech signals. This technology is widely used in applications such as **biometric authentication, security systems, and voice assistants**.
+
+This project builds a **simple yet effective speaker recognition system** using **Mel-Frequency Cepstral Coefficients (MFCC)** for feature extraction and **Vector Quantization (VQ) with the Linde-Buzo-Gray (LBG) algorithm** for pattern classification.
+
+### **Technical Principles**
+Speaker recognition systems generally consist of **two phases**:
+1. **Training (Enrollment) Phase**:
+   - The system extracts features from speech samples of known speakers.
+   - A reference model (codebook) is generated for each speaker.
+2. **Testing (Operational) Phase**:
+   - The system extracts features from an **unknown speech sample**.
+   - The extracted features are compared to stored speaker models.
+   - The system identifies the speaker based on the **minimum distortion measure**.
+
+The **MFCC method** is used for **speech feature extraction** because:
+- It mimics **human auditory perception**, which is **more sensitive to lower frequencies**.
+- It reduces **redundant data** while preserving important phonetic features.
+- It is **robust to background noise and variations** in speech.
+
+The **Vector Quantization (VQ) technique**, specifically using the **Linde-Buzo-Gray (LBG) algorithm**, is adopted because:
+- It is computationally efficient compared to more complex deep learning models.
+- It effectively **clusters similar feature vectors** for each speaker.
+- It allows for **quick classification** by measuring the distortion between input features and stored codebooks.
 
 ## **Project Structure**
 The system follows these main steps:
@@ -10,6 +33,8 @@ The system follows these main steps:
 - **Training**: Build speaker-specific codebooks using the LBG algorithm.  
 - **Testing**: Classify test speech samples using trained codebooks.  
 - **Evaluation**: Assess system performance under various test conditions.  
+
+---
 
 ## **Code Components**
 
@@ -89,40 +114,50 @@ Trains a speaker codebook using the **LBG (Linde-Buzo-Gray) algorithm**.
 
 ---
 
-## **Test Results**
-The system was evaluated using various test scenarios. Below are the results:
+## **Test Results & Improvement Strategies**
+During the testing process, we gradually improved system performance by modifying several key aspects.
 
 ### **TEST 1: Human Recognition Rate**
 - **Initial accuracy:** 25% (training), 12.5% (test)  
 - **After multiple listens:** 87.5% (training), 100% (test)  
+- **Improvement Strategy:**  
+  - Recognized that human perception alone is **not reliable for speaker identification**.  
+  - Used **MFCC features** instead of direct waveform comparison.
 
 ### **TEST 2: Spectrogram Analysis**
 - **FFT sizes tested:** `N = 128`, `N = 256`, `N = 512`  
+- **Observation:**  
+  - The **energy distribution** of the signal changes with frame size.
+  - Optimal **windowing and frame increment (N/3)** was selected.
 
 ### **TEST 3: Mel Filter Bank Analysis**
-- Extracted features effectively.  
+- **Improvement:**  
+  - Minor distortions were observed in the filter bank response.  
+  - Adjusted **filter spacing and triangle shapes** for better feature extraction.
 
-### **TEST 5: MFCC Scatter Plot**
-- Clustering observed but **some overlap** exists.  
-
-### **TEST 6: Codebook Visualization**
-- LBG algorithm **successfully differentiates speakers**.  
+### **TEST 5 & TEST 6: MFCC Scatter Plot & VQ Codebook Visualization**
+- **Observation:**  
+  - Clustering was **visible** but **overlapping** between similar voices.  
+  - Trained the **LBG algorithm** with increased centroids for better separation.
 
 ### **TEST 7: Speaker Recognition Accuracy**
-- **100% accuracy** on training and test datasets.  
+- **Initial accuracy:** 100% on training and test datasets.  
+- **Improvement:**  
+  - Added **more speakers** to test **scalability**.
 
 ### **TEST 8: Notch Filter Impact**
-- Some minor misclassifications (e.g., `s3.wav`).  
+- **Observation:**  
+  - Notch filtering **caused minor misclassification**.  
+- **Improvement Strategy:**  
+  - Increased **MFCC coefficient count** to **retain more spectral details**.
 
-### **TEST 9: Expanded Speaker Set**
-- **94.4% accuracy** (lower than TEST 7).  
-
-### **TEST 10a: Zero vs Twelve Identification**
-- **Accuracy: 91.7%**  
-- Some misclassifications occurred.  
-
-### **TEST 10b: Five vs Eleven Identification**
-- **100% accuracy**  
+### **TEST 9 & TEST 10: Speaker Expansion & Multi-class Testing**
+- **Observation:**  
+  - Increasing the number of speakers **slightly decreased accuracy**.  
+  - Identifying between **"zero"/"twelve"** was harder than **"five"/"eleven"**.  
+- **Final Accuracy:**  
+  - **"zero"/"twelve"**: **91.7%**  
+  - **"five"/"eleven"**: **100%**  
 
 ---
 
