@@ -137,6 +137,7 @@ During the testing process, we gradually improved system performance by modifyin
     <td><img src="final report plots/test2_512f.png" width="300"></td>
   </tr>
 </table>
+
 ### **TEST 2: Spectrogram Analysis**
 - **FFT sizes tested:** `N = 128`, `N = 256`, `N = 512`  
 - **Observation:**  
