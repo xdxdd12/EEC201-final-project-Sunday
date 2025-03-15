@@ -123,7 +123,20 @@ During the testing process, we gradually improved system performance by modifyin
 - **Improvement Strategy:**  
   - Recognized that human perception alone is **not reliable for speaker identification**.  
   - Used **MFCC features** instead of direct waveform comparison.
-
+<table>
+  <tr>
+    <td><img src="final report plots/test2_128t.png" width="300"></td>
+    <td><img src="final report plots/test2_128f.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="final report plots/test2_256t.png" width="300"></td>
+    <td><img src="final report plots/test2_256f.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="final report plots/test2_512t.png" width="300"></td>
+    <td><img src="final report plots/test2_512f.png" width="300"></td>
+  </tr>
+</table>
 ### **TEST 2: Spectrogram Analysis**
 - **FFT sizes tested:** `N = 128`, `N = 256`, `N = 512`  
 - **Observation:**  
