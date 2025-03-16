@@ -113,9 +113,86 @@ Trains a speaker codebook using the **LBG (Linde-Buzo-Gray) algorithm**.
 - **codebook**: A matrix of centroid points  
 
 ---
+## **Challenges and Solutions**
+During the development of this project, we encountered several technical challenges and systematically addressed them. Below are the key issues we faced and the solutions we implemented.
 
-## **Test Results & Improvement Strategies**
-During the testing process, we gradually improved system performance by modifying several key aspects.
+### **1. Issues with Mel Filter Bank**
+#### **Problem:**
+- When implementing the **Mel filter bank**, we expected a series of **perfect triangular filters**.
+- However, we observed that:
+  1. The **last filter** became a **right-angled triangle** instead of a regular triangle.
+  2. The **filter peaks were imperfect**, and some response values were **negative**.
+
+#### **Diagnosis & Solution:**
+- We carefully reviewed our code and identified **two potential issues**:
+  1. **Incorrectly constrained frequency indices**, leading to negative values.
+  2. **Out-of-range frequency calculations** for `(freqBins(j) - fLeft) / (fCenter - fLeft)` and `(fRight - freqBins(j)) / (fRight - fCenter)`.
+- After fixing these constraints, the **negative values disappeared**.
+- However, we then noticed that a **flat line appeared at zero**, indicating that one filter was **entirely inactive**.
+- Setting the **number of filters to 20** showed that only **19 triangular filters** were visible.
+- Comparing our implementation with **existing references**, we found that:
+  - The **highest-frequency filter** did not correctly match **FFT bins**.
+  - The **highest Mel filter might have exceeded the Nyquist frequency**.
+- After **correcting the frequency mapping**, we finally obtained the **correct Mel filter bank**.
+
+---
+
+### **2. MFCC Feature Visualization and Speaker Separation**
+#### **Problem:**
+- After computing MFCCs, we **randomly selected two MFCC dimensions** and plotted them.
+- While **individual clusters looked promising**, the **two MFCC dimensions overlapped heavily**.
+- This raised concerns about **whether MFCC features alone were sufficient** for speaker differentiation.
+- We worried that this could lead to **significant errors** in speaker recognition.
+
+#### **Investigation & Solution:**
+- We first tried **adjusting frame length (N) and hop size (M)** to improve speaker separability.
+- However, no matter how we tuned **M and N**, **speaker points still overlapped significantly**.
+- Further research revealed that:
+  - **Lower-order MFCCs (1st and 2nd coefficients)** are **not ideal** for speaker recognition.
+  - **Higher-order MFCCs** are **more useful for speaker distinction**.
+- We then experimented with **MFCC dimensions 3 and 4**.
+  - While **not dramatically different**, the separation **improved slightly**.
+- We also considered **PCA for dimensionality reduction**, but:
+  - PCA **alters MFCC features**, making it **incompatible with the LBG algorithm**.
+- Another potential solution was to **enhance speaker distinction by computing ΔMFCC and ΔΔMFCC**.
+  - However, we **did not apply this method**, as our system **already achieved high accuracy**.
+
+---
+
+### **3. Variability in Speaker Recognition Results**
+#### **Problem:**
+- When running the **same test multiple times**, we expected **identical results**.
+- However, using the **2024 student dataset**, the system **produced inconsistent results**.
+- Specifically, **some speakers were assigned to different speaker labels** across multiple runs.
+
+#### **Analysis & Solution:**
+- The **LBG algorithm** uses an **error threshold (ε)** to determine convergence.
+- **Slight variations in codebook convergence** across runs could cause **small differences** in centroids.
+- For **certain speakers**, their distance to multiple centroids was **very close**.
+- As a result, **small variations in centroids** led to **different speaker assignments**.
+
+##### **Proposed Fix:**
+- We tried **reducing ε to 0.0001**, which **eliminated the instability**.
+- However, **reducing ε too much caused overfitting**, leading to **misclassifications in other speakers**.
+- After balancing **stability vs. generalization**, we set **ε = 0.005**, which provided **optimal accuracy and consistency**.
+
+---
+
+### **4. Impact of Mel Filter Bank Size and Codebook Centroids**
+#### **Observations:**
+- We experimented with **changing the number of Mel filters** and **codebook centroids**.
+- **Key findings**:
+  - **The number of Mel filters had little impact** on overall accuracy.
+  - **Codebook size had a significant impact**:
+    - **Too few centroids** → Poor speaker differentiation.
+    - **Too many centroids** → Overfitting and decreased accuracy.
+- **Final Adjustment**: We **optimized the centroid count** to achieve the best recognition performance.
+
+---
+
+## **Test Results**
+After addressing the above challenges, we conducted several systematic tests to measure the effectiveness of our improvements.
+
 
 ## **TEST 1: Human Recognition Rate**
 ### **Objective:**
@@ -178,7 +255,7 @@ During the testing process, we gradually improved system performance by modifyin
 - **Conclusion**: Adjusted **filter spacing** for **better phonetic feature capture**.
 <table>
   <tr>
-    <td><img src="final report plots/test3t.png" width="300"></td>
+    <td><img src="final report plots/test3f.png" width="300"></td>
     <td><img src="final report plots/test3melfb.png" width="300"></td>
   </tr>
 </table>
