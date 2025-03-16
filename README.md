@@ -117,17 +117,36 @@ Trains a speaker codebook using the **LBG (Linde-Buzo-Gray) algorithm**.
 ## **Test Results & Improvement Strategies**
 During the testing process, we gradually improved system performance by modifying several key aspects.
 
-### **TEST 1: Human Recognition Rate**
-- **Initial accuracy:** 25% (training), 12.5% (test)  
-- **After multiple listens:** 87.5% (training), 100% (test)  
-- **Improvement Strategy:**  
-  - Recognized that human perception alone is **not reliable for speaker identification**.  
-  - Used **MFCC features** instead of direct waveform comparison.
-### **TEST 2: Spectrogram Analysis**
-- **FFT sizes tested:** `N = 128`, `N = 256`, `N = 512`  
-- **Observation:**  
-  - The **energy distribution** of the signal changes with frame size.
-  - Optimal **windowing and frame increment (N/3)** was selected.
+## **TEST 1: Human Recognition Rate**
+### **Objective:**
+- Evaluate **human ability** to recognize speakers from a limited dataset.
+- Use this as a **baseline** to compare against the automated system.
+
+### **Procedure:**
+1. Listened to **training speech samples** from the dataset.
+2. Attempted to identify speakers from **test speech samples** **without** using automated methods.
+3. Measured **initial accuracy** and **accuracy after multiple listens**.
+
+### **Results:**
+- **Initial accuracy**: 25% (Dong), 12.5% (Mengxue).
+- **After multiple listens**: **87.5% (Dong), 100% (Mengxue)**.
+- **Conclusion**: Human perception alone is **not reliable** for speaker identification, leading to the implementation of the **MFCC + VQ approach**.
+
+## **TEST 2: Spectrogram Analysis**
+### **Objective:**
+- Examine **frequency distribution** in speech signals.
+- Determine the **optimal FFT frame size** for feature extraction.
+
+### **Procedure:**
+1. Tested different **FFT sizes** (`N = 128`, `N = 256`, `N = 512`).
+2. Compared the **energy distribution** and **spectrogram output**.
+3. Selected the best **frame increment** for short-time processing.
+
+### **Results:**
+- **Smaller FFT sizes** retained **fine-grained details**, but larger FFT sizes provided **better speaker distinction**.
+- **N = 512** with **frame increment N/3** provided the **best balance**.
+- **Conclusion**: This configuration was used in **subsequent tests**.
+
 <table>
   <tr>
     <td><img src="final report plots/test2_128t.png" width="300"></td>
@@ -143,53 +162,160 @@ During the testing process, we gradually improved system performance by modifyin
   </tr>
 </table>
 
-### **TEST 3: Mel Filter Bank Analysis**
-- **Improvement:**  
-  - Minor distortions were observed in the filter bank response.  
-  - Adjusted **filter spacing and triangle shapes** for better feature extraction.
+## **TEST 3: Mel Filter Bank Analysis**
+### **Objective:**
+- Assess the **effectiveness** of the Mel filter bank.
+- Validate if **triangular filters** properly model speech features.
+
+### **Procedure:**
+1. Generated **Mel filter bank responses**.
+2. Compared filter shapes to **theoretical triangular responses**.
+3. Evaluated **spectral impact** before and after **mel-frequency wrapping**.
+
+### **Results:**
+- Some **distortion** at the base of filters.
+- The **overall spectral response was correct**, confirming **effective feature extraction**.
+- **Conclusion**: Adjusted **filter spacing** for **better phonetic feature capture**.
 <table>
   <tr>
     <td><img src="final report plots/test3t.png" width="300"></td>
-    <td><img src="final report plots/test3f.png" width="300"></td>
+    <td><img src="final report plots/test3melfb.png" width="300"></td>
   </tr>
 </table>
 
-### **TEST 5 & TEST 6: MFCC Scatter Plot & VQ Codebook Visualization**
-- **Observation:**  
-  - Clustering was **visible** but **overlapping** between similar voices.  
-  - Trained the **LBG algorithm** with increased centroids for better separation.
+## **TEST 5: MFCC Scatter Plot**
+### **Objective:**
+- Visualize how **MFCC features cluster** for different speakers.
+- Determine if the **LBG algorithm** can correctly distinguish them.
+
+### **Procedure:**
+1. Extracted **MFCC features** from multiple speakers.
+2. Plotted **scatter plots** of any two MFCC dimensions.
+3. Observed **clustering effects** for different speakers.
+
+### **Results:**
+- **Speakers formed distinct clusters**, but **some overlaps** were present.
+- **Conclusion**: Increasing **VQ centroids** in later tests to **improve separation**.
+
 <p align="center">
-  <img src="final report plots/test5.png" width="500">
+  <img src="final report plots/test5mfcc.png" width="500">
+</p>
+
+## **TEST 6: VQ Codebook Visualization**
+### **Objective:**
+- Validate the **clustering quality** of the **LBG algorithm**.
+- Determine if **codewords** effectively represent speaker identities.
+
+### **Procedure:**
+1. Plotted **VQ codewords** for each speaker.
+2. Overlaid them on the **MFCC scatter plot** from TEST 5.
+3. Checked if the **codewords aligned with speaker clusters**.
+
+### **Results:**
+- **Distinct centroids** for each speaker.
+- The **LBG algorithm** effectively grouped similar feature vectors.
+- **Conclusion**: The trained codebooks can reliably distinguish speakers.
+
+<p align="center">
+  <img src="final report plots/test6center.png" width="500">
+</p>
+
+## **TEST 7: Speaker Recognition Accuracy**
+### **Objective:**
+- Evaluate the **overall accuracy** of the speaker recognition system.
+
+### **Procedure:**
+1. Trained the system on the **GivenSpeech_Data dataset**.
+2. Tested recognition **on unseen test samples**.
+3. Measured the **accuracy**.
+
+### **Results:**
+- **100% accuracy** on the **training and test sets**.
+- **Conclusion**: The system successfully distinguishes speakers under **controlled conditions**.
+
+<p align="center">
+  <img src="final report plots/test7result.png" width="500">
 </p>
 
 
-### **TEST 7: Speaker Recognition Accuracy**
-- **Initial accuracy:** 100% on training and test datasets.  
-- **Improvement:**  
-  - Added **more speakers** to test **scalability**.
+## **TEST 8: Notch Filter Impact**
+### **Objective:**
+- Assess how **notch filtering affects recognition performance**.
+- Test if the system remains **robust to filtered speech**.
+
+### **Procedure:**
+1. Applied **notch filters** to test samples.
+2. Ran the **recognition system**.
+3. Measured **classification accuracy**.
+
+### **Results:**
+- **Some misclassification** occurred (`s3.wav` was sometimes incorrect).
+- **All other test files were recognized correctly**, showing the system is **robust**.
+- **Conclusion**: Increased **MFCC coefficient count** to **retain more spectral details**.
+
 <p align="center">
-  <img src="final report plots/test7.png" width="500">
+  <img src="final report plots/test8result.png" width="500">
 </p>
 
 
-### **TEST 8: Notch Filter Impact**
-- **Observation:**  
-  - Notch filtering **caused minor misclassification**.  
-- **Improvement Strategy:**  
-  - Increased **MFCC coefficient count** to **retain more spectral details**.
+## **TEST 9: Expanding the Speaker Set**
+### **Objective:**
+- Evaluate **scalability** by increasing the number of speakers.
+- Compare performance **before and after adding new speakers**.
+
+### **Procedure:**
+1. Selected **10 new speakers** from the **2024 student dataset**, each saying **"zero"**.
+2. Divided the dataset:
+   - **One recording per speaker for training**.
+   - **Another recording per speaker for testing**.
+3. Retrained the system with both **original speakers + 10 new speakers**.
+4. Tested the recognition accuracy on the expanded dataset.
+
+### **Results:**
+- **Accuracy dropped slightly** compared to the previous test.
+- **Newly added speakers were harder to differentiate**, leading to **a lower recognition rate than before**.
+- **Conclusion**: The **MFCC + LBG method can scale**, but may require **fine-tuning** with **more speakers**.
+
 <p align="center">
-  <img src="final report plots/test8.png" width="500">
+  <img src="final report plots/test9result.png" width="500">
 </p>
 
+## **TEST 10: Comparing Different Words for Speaker Identification**
+### **TEST 10a: Using "zero" vs "twelve" for speaker identification**
+### **Objective:**
+- Test **whether certain words affect speaker identification accuracy**.
 
-### **TEST 9 & TEST 10: Speaker Expansion & Multi-class Testing**
-- **Observation:**  
-  - Increasing the number of speakers **slightly decreased accuracy**.  
-  - Identifying between **"zero"/"twelve"** was harder than **"five"/"eleven"**.  
-- **Final Accuracy:**  
-  - **"zero"/"twelve"**: **91.7%**  
-  - **"five"/"eleven"**: **100%**  
+### **Procedure:**
+1. Trained the system with samples of **"zero"** and **"twelve"**.
+2. Tested **recognition accuracy** using both words.
 
+### **Results:**
+- **Misclassified samples**: `Twelve_test16`, `Zero_test12`, `Zero_test7`.
+- **Overall system accuracy**: **91.7%**.
+- **Conclusion**: **"Twelve" performed better** than "zero" for speaker identification.
+<p align="center">
+  <img src="final report plots/test10aresult.png" width="500">
+</p>
+---
+
+### **TEST 10b: Using "five" vs "eleven" for speaker identification**
+### **Objective:**
+- Compare recognition performance using **different word samples**.
+
+### **Procedure:**
+1. Trained the system with samples of **"five"** and **"eleven"**.
+2. Measured **recognition accuracy**.
+
+### **Results:**
+- Both **"eleven" and "five"** were correctly identified.
+- **System accuracy**: **100%**.
+- **Conclusion**: **Higher accuracy** than using "zero" or "twelve".
+<table>
+  <tr>
+    <td><img src="final report plots/test10bresult.png" width="300"></td>
+    <td><img src="final report plots/test10bresult_5.png" width="300"></td>
+  </tr>
+</table>
 
 ---
 
