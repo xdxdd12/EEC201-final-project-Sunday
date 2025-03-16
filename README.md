@@ -147,22 +147,40 @@ During the testing process, we gradually improved system performance by modifyin
 - **Improvement:**  
   - Minor distortions were observed in the filter bank response.  
   - Adjusted **filter spacing and triangle shapes** for better feature extraction.
+<table>
+  <tr>
+    <td><img src="final report plots/test3t.png" width="300"></td>
+    <td><img src="final report plots/test3f.png" width="300"></td>
+  </tr>
+</table>
 
 ### **TEST 5 & TEST 6: MFCC Scatter Plot & VQ Codebook Visualization**
 - **Observation:**  
   - Clustering was **visible** but **overlapping** between similar voices.  
   - Trained the **LBG algorithm** with increased centroids for better separation.
+<p align="center">
+  <img src="final report plots/test5.png" width="500">
+</p>
+
 
 ### **TEST 7: Speaker Recognition Accuracy**
 - **Initial accuracy:** 100% on training and test datasets.  
 - **Improvement:**  
   - Added **more speakers** to test **scalability**.
+<p align="center">
+  <img src="final report plots/test7.png" width="500">
+</p>
+
 
 ### **TEST 8: Notch Filter Impact**
 - **Observation:**  
   - Notch filtering **caused minor misclassification**.  
 - **Improvement Strategy:**  
   - Increased **MFCC coefficient count** to **retain more spectral details**.
+<p align="center">
+  <img src="final report plots/test8.png" width="500">
+</p>
+
 
 ### **TEST 9 & TEST 10: Speaker Expansion & Multi-class Testing**
 - **Observation:**  
@@ -171,6 +189,7 @@ During the testing process, we gradually improved system performance by modifyin
 - **Final Accuracy:**  
   - **"zero"/"twelve"**: **91.7%**  
   - **"five"/"eleven"**: **100%**  
+
 
 ---
 
